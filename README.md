@@ -17,7 +17,7 @@
     **Не правильно**:
     ```php
     <?php
-    $comments = CIBlockElement::GetList(Array(), Array("IBLOCK_ID" => 12));
+    $comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => 12));
     ```
     **Правильно**:
     Создаем файл constants.php и указываем в нем:
@@ -30,14 +30,14 @@
     ```php
     <?php
     //Константы проекта
-    include_once($_SERVER["DOCUMENT_ROOT"] . '/bitrix/php_interface/includes/constants.php');
+    include_once($_SERVER['DOCUMENT_ROOT'] . '/bitrix/php_interface/includes/constants.php');
     ```
     Используем константу
     ```php
     <?php
-    $comments = CIBlockElement::GetList(Array(), Array("IBLOCK_ID" => COMMENTS_IBLOCK_ID));
+    $comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => COMMENTS_IBLOCK_ID));
     ```
-- при выборках данных (например, [GetList](http://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php)) ОБЯЗАТЕЛЬНО указывать поля, которые нужны для дальнейших манипуляций, кроме случаев, когда нужны все поля
+- при выборках данных (например, [GetList](http://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php)) ОБЯЗАТЕЛЬНО указывать поля (для GetList это 5-ый параметр arSelectFields), которые нужны для дальнейших манипуляций, кроме случаев, когда нужны все поля
 - при необходмости выбрать несколько элементов по ID, ОБЯЗАТЕЛЬНО использовать GetList вместо GetByID
 
     **Не правильно**:
@@ -49,7 +49,7 @@
     **Правильно**:
     ```php
     <?php
-    $elements = CIBlockElement::GetList(Array(), Array(1, 2));
+    $elements = CIBlockElement::GetList(array(), array(1, 2));
     ```
 - НЕ РЕКОМЕНДУЕТСЯ использовать прямые запросы к базе данных без крайней необходимости
 - если к файлу не предусмотрен прямой доступ ОБЯЗАТЕЛЬНО в первой строке файла добавить
@@ -69,9 +69,7 @@
 - НЕЛЬЗЯ модифицировать стандартные компоненты. Если возникает такая необходимость — создается копия компонента в своем пространстве имен в папке `/bitrix/components/`
 - РЕКОММЕНДУЕТСЯ все шаблоны компонентов сохранять в шаблоне `.default` в папке `/bitrix/templates/.default/`
 - НЕ РЕКОМЕНДУЕТСЯ делать любые манипуляции с данными в файле `template.php`. При необходимости правки логики стандартных компонентов, но недостаточной для того, что делать свой используются файлы [result_modifier.php](http://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2830&LESSON_PATH=3913.4565.2830) и [component_epilog.php](http://dev.1c-bitrix.ru/learning/course/index.php?COURSE_ID=43&LESSON_ID=2975&LESSON_PATH=3913.4565.2975)
-- НЕЛЬЗЯ вставлять код вызова компонента внутрь файла `template.php` другого компонента
 - РЕКОМЕНДУЕТСЯ использовать файлы `style.css` и `script.js` в шаблонах только если они переопределяют стандартное поведение схожих элементов. РЕКОМЕНДУЕТСЯ оставить комментарий об этой особенности
-- НЕЛЬЗЯ отключать кеширование компонентов. Практически не существует задач, которые нельзя решить с включенным кешированием
 
 4. Работа с шаблонами
 -----------
