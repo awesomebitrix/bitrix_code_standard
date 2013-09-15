@@ -26,30 +26,30 @@
 
 1. Определите константу `LOG_FILENAME` в файле `/bitrix/php_interface/dbconn.php`, задавая путь к лог-файлу за пределами `DOCUMENT_ROOT`.
 
-    ```php
-    // определяем константу LOG_FILENAME, в которой зададим путь к лог-файлу
-    define("LOG_FILENAME", $_SERVER["DOCUMENT_ROOT"]."/../log.txt");
-    ```
+```php
+// определяем константу LOG_FILENAME, в которой зададим путь к лог-файлу
+define('LOG_FILENAME', $_SERVER['DOCUMENT_ROOT'] . '/_main.log');
+```
 
 2. Отправьте сообщение в лог
     
-    ```php
-    AddMessage2Log("Произвольный текст сообщения", "module_id");
-    ```
+```php
+AddMessage2Log('Произвольный текст сообщения', 'module_id');
+```
 
-    Пример:
+Пример:
 
-    ```php
-    AddMessage2Log( print_r($arResult, true) );
-    ```
+```php
+AddMessage2Log( print_r($arResult, true) );
+```
 
 ### SQL
 
 * Определите переменную `DBDebugToFile` для логирования всех SQL запросов.
 
-    ```php
-    $DBDebugToFile = true;
-    ```
+```php
+$DBDebugToFile = true;
+```
 
 ## Базовые правила при разработке под Битрикс
 
@@ -98,7 +98,7 @@
 
     ```php
     <?php
-    if (!defined("B_PROLOG_INCLUDED") || B_PROLOG_INCLUDED!==true) die();
+    if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
     ```
 
 ## Работа с компонентами
