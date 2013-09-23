@@ -9,12 +9,9 @@
 Часть описанных в этом разделе требований уже указана в стандартах, приведенных выше, но отметим особенно важные.
 - РЕКОМЕНДУЕТСЯ использовать только `<?php` и `<?=` теги. Тег `<?` использовать НЕ РЕКОМЕНДУЕТСЯ.
 - РЕКОМЕНДУЕТСЯ использование кодировки UTF-8 без BOM.
+- Используйте Tab для каждого отступа. Никаких пробелов для блоков кода.
 
 ## Отладка
-
-**Важно**
-
-  *Логирование замедляет работу системы и может являться брешью в безопасности*
 
 ### Вывод на экран
 
@@ -54,52 +51,59 @@ $DBDebugToFile = true;
 ## Базовые правила при разработке под Битрикс
 
 - при добавлении кода в файл init.php РЕКОМЕНДУЕТСЯ выносить логически сгруппированный код в отдельные файлы и подключать их внутри init.php
+
+```php
+// SomeClass
+require_once __DIR__ . '/includes/some_class.php';
+```
+
 - НЕ РЕКОМЕНДУЕТСЯ использовать цифровые значения в GetList, GetByID и схожих методах, которые принимают различные ID. РЕКОМЕНДУЕТСЯ создать файл со всеми необходимыми константами и вызывать их имена. У каждой константы ДОЛЖНО быть «говорящее» именование и комментарий.
 
-	**Не правильно**:
-	```php
-	<?php
-	$comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => 12));
-	```
-	**Правильно**:
-	Создаем файл constants.php и указываем в нем:
-	```php
-	<?php
-	//ИБ с комментариями пользователей
-	const COMMENTS_IBLOCK_ID = 12;
-	```
-	Подключаем этот файл в init.php
-	```php
-	<?php
-	//Константы проекта
-	include_once($_SERVER['DOCUMENT_ROOT'] . '/bitrix/php_interface/includes/constants.php');
-	```
-	Используем константу
-	```php
-	<?php
-	$comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => COMMENTS_IBLOCK_ID));
-	```
-- при выборках данных (например, [GetList](http://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php)) ОБЯЗАТЕЛЬНО указывать поля (для GetList это 5-ый параметр arSelectFields), которые нужны для дальнейших манипуляций, кроме случаев, когда нужны все поля
-- при необходмости выбрать несколько элементов по ID, ОБЯЗАТЕЛЬНО использовать GetList вместо GetByID
+**Не правильно**:
+```php
+$comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => 12));
+```
 
-	**Не правильно**:
-	```php
-	<?php
-	$element1 = CIBlockElement::GetByID(1);
-	$element2 = CIBlockElement::GetByID(2);
-	```
-	**Правильно**:
-	```php
-	<?php
-	$elements = CIBlockElement::GetList(array(), array(1, 2));
-	```
-- НЕ РЕКОМЕНДУЕТСЯ использовать прямые запросы к базе данных без крайней необходимости
+**Правильно**:
+Создаем файл constants.php и указываем в нем:
+```php
+//ИБ с комментариями пользователей
+const COMMENTS_IBLOCK_ID = 12;
+```
+Подключаем этот файл в init.php
+```php
+//Константы проекта
+require_once __DIR__ . '/includes/constants.php';
+```
+Используем константу
+```php
+$comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => COMMENTS_IBLOCK_ID));
+```
+- при выборках данных (например, [GetList](http://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php)) ОБЯЗАТЕЛЬНО указывать поля (для GetList это 5-ый параметр arSelectFields), которые нужны для дальнейших манипуляций, кроме случаев, когда нужны все поля;
+
+```php
+$filter = array('IBLOCK_ID' => COMMENTS_IBLOCK_ID);
+$select = array('ID', 'NAME');
+$comments = CIBlockElement::GetList(array(), $filter, false, array(), $select);
+```
+- при необходмости выбрать несколько элементов по `ID`, ОБЯЗАТЕЛЬНО использовать `GetList` вместо `GetByID`
+
+**Не правильно**:
+```php
+$element1 = CIBlockElement::GetByID(1);
+$element2 = CIBlockElement::GetByID(2);
+```
+
+**Правильно**:
+```php
+$elements = CIBlockElement::GetList(array(), array(1, 2));
+```
+- НЕ РЕКОМЕНДУЕТСЯ использовать прямые запросы к базе данных без крайней необходимости;
 - если к файлу не предусмотрен прямой доступ ОБЯЗАТЕЛЬНО в первой строке файла добавить
 
-	```php
-	<?php
-	if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
-	```
+```php
+if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
+```
 
 ## Работа с компонентами
 
