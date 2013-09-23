@@ -32,7 +32,7 @@ define('LOG_FILENAME', $_SERVER['DOCUMENT_ROOT'] . '/_main.log');
 ```
 
 2. Отправьте сообщение в лог
-    
+	
 ```php
 AddMessage2Log('Произвольный текст сообщения', 'module_id');
 ```
@@ -56,50 +56,50 @@ $DBDebugToFile = true;
 - при добавлении кода в файл init.php РЕКОМЕНДУЕТСЯ выносить логически сгруппированный код в отдельные файлы и подключать их внутри init.php
 - НЕ РЕКОМЕНДУЕТСЯ использовать цифровые значения в GetList, GetByID и схожих методах, которые принимают различные ID. РЕКОМЕНДУЕТСЯ создать файл со всеми необходимыми константами и вызывать их имена. У каждой константы ДОЛЖНО быть «говорящее» именование и комментарий.
 
-    **Не правильно**:
-    ```php
-    <?php
-    $comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => 12));
-    ```
-    **Правильно**:
-    Создаем файл constants.php и указываем в нем:
-    ```php
-    <?php
-    //ИБ с комментариями пользователей
-    const COMMENTS_IBLOCK_ID = 12;
-    ```
-    Подключаем этот файл в init.php
-    ```php
-    <?php
-    //Константы проекта
-    include_once($_SERVER['DOCUMENT_ROOT'] . '/bitrix/php_interface/includes/constants.php');
-    ```
-    Используем константу
-    ```php
-    <?php
-    $comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => COMMENTS_IBLOCK_ID));
-    ```
+	**Не правильно**:
+	```php
+	<?php
+	$comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => 12));
+	```
+	**Правильно**:
+	Создаем файл constants.php и указываем в нем:
+	```php
+	<?php
+	//ИБ с комментариями пользователей
+	const COMMENTS_IBLOCK_ID = 12;
+	```
+	Подключаем этот файл в init.php
+	```php
+	<?php
+	//Константы проекта
+	include_once($_SERVER['DOCUMENT_ROOT'] . '/bitrix/php_interface/includes/constants.php');
+	```
+	Используем константу
+	```php
+	<?php
+	$comments = CIBlockElement::GetList(array(), array('IBLOCK_ID' => COMMENTS_IBLOCK_ID));
+	```
 - при выборках данных (например, [GetList](http://dev.1c-bitrix.ru/api_help/iblock/classes/ciblockelement/getlist.php)) ОБЯЗАТЕЛЬНО указывать поля (для GetList это 5-ый параметр arSelectFields), которые нужны для дальнейших манипуляций, кроме случаев, когда нужны все поля
 - при необходмости выбрать несколько элементов по ID, ОБЯЗАТЕЛЬНО использовать GetList вместо GetByID
 
-    **Не правильно**:
-    ```php
-    <?php
-    $element1 = CIBlockElement::GetByID(1);
-    $element2 = CIBlockElement::GetByID(2);
-    ```
-    **Правильно**:
-    ```php
-    <?php
-    $elements = CIBlockElement::GetList(array(), array(1, 2));
-    ```
+	**Не правильно**:
+	```php
+	<?php
+	$element1 = CIBlockElement::GetByID(1);
+	$element2 = CIBlockElement::GetByID(2);
+	```
+	**Правильно**:
+	```php
+	<?php
+	$elements = CIBlockElement::GetList(array(), array(1, 2));
+	```
 - НЕ РЕКОМЕНДУЕТСЯ использовать прямые запросы к базе данных без крайней необходимости
 - если к файлу не предусмотрен прямой доступ ОБЯЗАТЕЛЬНО в первой строке файла добавить
 
-    ```php
-    <?php
-    if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
-    ```
+	```php
+	<?php
+	if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
+	```
 
 ## Работа с компонентами
 
@@ -125,6 +125,25 @@ $DBDebugToFile = true;
  - Имя пользователя: USER_NAME
  - Валюта заказа: ORDER_CURRENCY
  - Список заказов: ORDER_LIST
+- Использовать уникальные `CODE` для каждого отдельного инфо-блока. Рекомендуется поставить защиты:
+
+```php
+AddEventHandler('iblock', 'OnBeforeIBlockAdd', 'checkCode');
+AddEventHandler('iblock', 'OnBeforeIBlockUpdate', 'checkCode');
+function checkCode($params)
+{
+	if (isset($params['CODE']) && $params['CODE'] !== '') {
+		CModule::IncludeModule('iblock');
+
+		$iblocks = CIBlock::GetList(array(), array('CODE' => $params['CODE']));
+		if ($iblock = $iblocks->Fetch()) {
+			$APPLICATION->ThrowException(new CApplicationException('Инфоблок с таким CODE уже существует.'));
+
+			return false;
+		}
+	}
+}
+```
 
 ## AJAX-обработчики
 
