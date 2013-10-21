@@ -54,7 +54,7 @@ $DBDebugToFile = true;
 
 ```php
 // SomeClass
-require_once __DIR__ . '/includes/some_class.php';
+require_once __DIR__ . '/include/some_class.php';
 ```
 
 - НЕ РЕКОМЕНДУЕТСЯ использовать цифровые значения в GetList, GetByID и схожих методах, которые принимают различные ID. РЕКОМЕНДУЕТСЯ создать файл со всеми необходимыми константами и вызывать их имена. У каждой константы ДОЛЖНО быть «говорящее» именование и комментарий.
@@ -102,7 +102,9 @@ $elements = CIBlockElement::GetList(array(), array(1, 2));
 - если к файлу не предусмотрен прямой доступ ОБЯЗАТЕЛЬНО в первой строке файла добавить
 
 ```php
-if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) die();
+if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED !== true) {
+	die();
+}
 ```
 
 ## Работа с компонентами
